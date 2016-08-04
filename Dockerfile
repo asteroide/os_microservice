@@ -3,6 +3,10 @@ FROM ubuntu:16.04
 ARG KEYSTONE_PASSWD=password
 ARG MYSQL_PASSWD=password
 
+ENV http_proxy 'http://www-cache-nrs.si.fr.intraorange:3128/'
+ENV https_proxy 'http://www-cache-nrs.si.fr.intraorange:3128/'
+ENV ALL_PROXY 'http://www-cache-nrs.si.fr.intraorange:3128/'
+
 # Add Cloud repositories
 #RUN apt-get install -qq -y software-properties-common
 #RUN add-apt-repository cloud-archive:mitaka
@@ -21,6 +25,8 @@ RUN { \
                 echo "mysql-server-5.5 mysql-server/root_password_again seen true"; \
         } | debconf-set-selections \
         && apt-get install -qq -y mysql-server python-mysqldb python-pymysql
+
+EXPOSE 3306
 
 ADD scripts/configure_mysql.sh /tmp/configure_mysql.sh
 RUN bash /tmp/configure_mysql.sh
@@ -42,9 +48,9 @@ RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_in
 RUN mysql -uroot -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
+EXPOSE 5000 35357
 
+# for testing purposes
 RUN apt-get install -qq -y net-tools
-
 CMD netstat -tanpeo
 
-EXPOSE 5000 35357
