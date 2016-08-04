@@ -22,6 +22,8 @@ RUN { \
         } | debconf-set-selections \
         && apt-get install -qq -y mysql-server python-mysqldb python-pymysql
 
+EXPOSE 3306
+
 ADD scripts/configure_mysql.sh /tmp/configure_mysql.sh
 RUN bash /tmp/configure_mysql.sh
 
@@ -42,9 +44,9 @@ RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_in
 RUN mysql -uroot -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
+EXPOSE 5000 35357
 
+# for testing purposes
 RUN apt-get install -qq -y net-tools
-
 CMD netstat -tanpeo
 
-EXPOSE 5000 35357
