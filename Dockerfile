@@ -22,26 +22,28 @@ RUN { \
         } | debconf-set-selections \
         && apt-get install -qq -y mysql-server python-mysqldb python-pymysql
 
-#ADD scripts/configure_mysql.sh /tmp/configure_mysql.sh
-#RUN bash /tmp/configure_mysql.sh
+ADD scripts/configure_mysql.sh /tmp/configure_mysql.sh
+RUN bash /tmp/configure_mysql.sh
 
 # install Apache
 RUN apt-get install -qq -y apache2
 
 # install RabbitMQ
-#RUN apt-get install -qq -y rabbitmq-server
-#RUN rabbitmqctl add_user openstack password
-#RUN rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+RUN apt-get install -qq -y rabbitmq-server
+RUN rabbitmqctl add_user openstack password
+RUN rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
 # install OpenStack client
 #RUN apt-get install -qq -y python-openstackclient
 
 # install Keystone
-#ADD conf/keystone_init.sql /tmp/keystone_init.sql
-#RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_init.sql.new
-#RUN mysql -uroot -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
+ADD conf/keystone_init.sql /tmp/keystone_init.sql
+RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_init.sql.new
+RUN mysql -uroot -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
+
+RUN apt-get install -qq -y net-tools
 
 CMD netstat -tanpeo
 
