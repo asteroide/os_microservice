@@ -13,3 +13,5 @@ character-set-server = utf8
 EOF
 
 service  mysql restart
+
+mysql -uroot -p$1 < /tmp/keystone_init.sql.new

@@ -27,8 +27,10 @@ RUN { \
 
 EXPOSE 3306
 
+ADD conf/keystone_init.sql /tmp/keystone_init.sql
+RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_init.sql.new
 ADD scripts/configure_mysql.sh /tmp/configure_mysql.sh
-RUN bash /tmp/configure_mysql.sh
+RUN bash /tmp/configure_mysql.sh $MYSQL_PASSWD
 
 # install Apache
 RUN apt-get install -qq -y apache2
@@ -42,9 +44,6 @@ RUN apt-get install -qq -y apache2
 #RUN apt-get install -qq -y python-openstackclient
 
 # install Keystone
-ADD conf/keystone_init.sql /tmp/keystone_init.sql
-RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_init.sql.new
-RUN mysql -uroot -h$IP_ADDR -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
 EXPOSE 5000 35357
