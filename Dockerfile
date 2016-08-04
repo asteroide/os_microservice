@@ -10,6 +10,9 @@ ARG MYSQL_PASSWD=password
 
 RUN apt-get -qq -y update
 
+RUN apt-get install -qq -y net-tools
+RUN export IP_ADDR=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
+
 #RUN apt-get -qq -y dist-upgrade
 #RUN apt-get -qq -y install memcached
 
@@ -41,12 +44,11 @@ RUN apt-get install -qq -y apache2
 # install Keystone
 ADD conf/keystone_init.sql /tmp/keystone_init.sql
 RUN sed "s/PASSWORD/$KEYSTONE_PASSWD/" /tmp/keystone_init.sql > /tmp/keystone_init.sql.new
-RUN mysql -uroot -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
+RUN mysql -uroot -h$IP_ADDR -p$MYSQL_PASSWD < /tmp/keystone_init.sql.new
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
 EXPOSE 5000 35357
 
 # for testing purposes
-RUN apt-get install -qq -y net-tools
 CMD netstat -tanpeo
 
