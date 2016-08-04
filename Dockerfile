@@ -29,9 +29,9 @@ RUN bash /tmp/configure_mysql.sh
 RUN apt-get install -qq -y apache2
 
 # install RabbitMQ
-RUN apt-get install -qq -y rabbitmq-server
-RUN rabbitmqctl add_user openstack password
-RUN rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+#RUN apt-get install -qq -y rabbitmq-server
+#RUN rabbitmqctl add_user openstack password
+#RUN rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
 # install OpenStack client
 #RUN apt-get install -qq -y python-openstackclient
