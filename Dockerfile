@@ -43,6 +43,6 @@ RUN apt-get install -qq -y apache2
 
 RUN apt-get install -qq -y keystone python-openstackclient libapache2-mod-wsgi
 
-
+CMD netstat -tanpeo
 
 EXPOSE 5000 35357
